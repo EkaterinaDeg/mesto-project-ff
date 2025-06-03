@@ -1,0 +1,27 @@
+{
+  "name": "mesto-project-ff",
+  "version": "0.0.1",
+  "description": "ls",
+  "main": "index.js",
+  "scripts": {
+    "build": "rimraf dist && webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EkaterinaDeg/mesto-project-ff.git"
+  },
+  "author": "Ekaterina Degtyareva",
+  "license": "",
+  "bugs": {
+    "url": "https://github.com/EkaterinaDeg/mesto-project-ff/issues"
+  },
+  "homepage": "https://github.com/EkaterinaDeg/mesto-project-ff#readme",
+  "devDependencies": {
+    "@babel/core": "^7.27.4",
+    "@babel/preset-env": "^7.27.2",
+    "babel-loader": "^10.0.0",
+    "css-loader": "^7.1.2",
+    "rimraf": "^6.0.1",
+    "style-loader": "^4.0.0"
+  }
+}
