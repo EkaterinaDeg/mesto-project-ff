@@ -29,7 +29,7 @@ const cardNameInput = addCardForm.querySelector('input[name="place-name"]');
 const cardLinkInput = addCardForm.querySelector('input[name="link"]');
 
 const popupImage = imagePopup.querySelector('.popup__image');
-const popupCaption = imagePopup.querySelector('.popup__caption');
+const popupimageCaption = imagePopup.querySelector('.popup__caption');
 
 // === Инициализация ===
 if (profileImage) {
@@ -41,7 +41,7 @@ if (profileImage) {
 function openImagePopup(cardData) {
   popupImage.src = cardData.link;
   popupImage.alt = cardData.name;
-  popupCaption.textContent = cardData.name;
+  popupimageCaption.textContent = cardData.name;
   openModal(imagePopup); // ИСПОЛЬЗУЕМ ИМПОРТИРОВАННУЮ openModal
 }
 

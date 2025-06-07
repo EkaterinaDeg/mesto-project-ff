@@ -1,21 +1,33 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 module.exports = (env, argv) => {
-  const isProd = argv.mode === 'production';
+  const isProd = argv.mode === 'production'; // Определяем, находимся ли мы в production режиме
 
   return {
-    entry: './src/index.js',
+    entry: './src/index.js', // Точка входа для вашего приложения
+
+    // Режим сборки: 'production' для продакшена, 'development' для разработки
     mode: isProd ? 'production' : 'development',
+
     output: {
-      filename: 'bundle.js',
+      filename: isProd ? 'main.[contenthash].js' : 'main.js',
       path: path.resolve(__dirname, 'dist'),
       publicPath: '/',
       clean: true,
-      assetModuleFilename: 'assets/[name].[hash][ext]',
     },
+
+    optimization: {
+      minimize: isProd,
+      minimizer: [
+        new TerserPlugin({}),
+        new CssMinimizerPlugin({}),
+      ],
+    },
+
     module: {
       rules: [
         {
@@ -24,8 +36,18 @@ module.exports = (env, argv) => {
           exclude: /node_modules/,
         },
         {
-          test: /\.(png|svg|jpg|gif|woff(2)?|eot|ttf|otf)$/,
+          test: /\.(png|svg|jpg|jpeg|gif|webp)$/i,
           type: 'asset/resource',
+          generator: {
+            filename: 'images/[name].[hash][ext]'
+          }
+        },
+        {
+          test: /\.(woff|woff2|eot|ttf|otf)$/i,
+          type: 'asset/resource',
+          generator: {
+            filename: 'fonts/[name].[hash][ext]'
+          }
         },
         {
           test: /\.css$/,
@@ -40,33 +62,34 @@ module.exports = (env, argv) => {
         },
       ],
     },
+
     plugins: [
       new HtmlWebpackPlugin({
         template: './src/project.html',
+        minify: isProd ? {
+          collapseWhitespace: true,
+          removeComments: true,
+          removeRedundantAttributes: true,
+          removeEmptyAttributes: true,
+          minifyJS: true,
+          minifyCSS: true,
+        } : false,
       }),
-      ...(isProd
-        ? [
-            new MiniCssExtractPlugin(),
-            new CleanWebpackPlugin(),
-          ]
-        : []),
+      
+      new MiniCssExtractPlugin({
+        filename: isProd ? 'styles/[name].[contenthash].css' : 'styles/[name].css',
+      }),
     ],
-    resolve: {
-      fallback: {
-        "path": false,
-        "fs": false,
-        "os": false,
-        "url": false,
-      },
-    },
+
     devServer: {
       static: {
-        directory: path.resolve(__dirname, 'dist'),
-      },
-      compress: true,
-      port: 8080,
-      open: true,
-    },
-    devtool: isProd ? 'source-map' : 'eval-source-map',
-  };
+            directory: path.resolve(__dirname, 'dist'),
+  },
+  compress: true,
+  port: 8080,
+  open: true,
+},
+
+devtool: isProd ? false : 'eval-source-map',
+};
 };
