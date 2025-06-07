@@ -22,5 +22,5 @@
   z-index: 10;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s ease;
+  transition: visibility 0.5s ease, opacity 0.5s ease;
 }
