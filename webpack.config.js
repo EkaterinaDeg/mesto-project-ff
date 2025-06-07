@@ -8,9 +8,9 @@ module.exports = (env, argv) => {
   const isProd = argv.mode === 'production'; // Определяем, находимся ли мы в production режиме
 
   return {
-    entry: './src/index.js', // Точка входа для вашего приложения
+    entry: './src/index.js', 
 
-    // Режим сборки: 'production' для продакшена, 'development' для разработки
+    
     mode: isProd ? 'production' : 'development',
 
     output: {
