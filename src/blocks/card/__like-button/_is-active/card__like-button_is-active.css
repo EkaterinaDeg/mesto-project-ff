@@ -1,3 +1,14 @@
 .card__like-button_is-active {
   background: transparent url('../../../../images/like-active.svg') no-repeat;
 }
+
+.card__like-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* или flex-start */
+}
+
+.card__like-count {
+  display: block;
+  margin-top: 5px;
+}

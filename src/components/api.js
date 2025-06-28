@@ -6,6 +6,13 @@ const config = {
   }
 };
 
+function checkResponse(res) {
+  if (res.ok) {
+    return res.json();
+  }
+  return Promise.reject(`Ошибка: ${res.status}`);
+}
+
 export const getInitialCards = () => {
   return fetch(`${config.baseUrl}/cards`, {
     headers: {
@@ -13,13 +20,6 @@ export const getInitialCards = () => {
     }
   }).then(checkResponse);
 };
-
-function checkResponse(res) {
-  if (res.ok) {
-    return res.json();
-  }
-  return Promise.reject(`Ошибка: ${res.status}`);
-}
 
 // Загрузка данных пользователя
 export const getUserInfo = () => {
@@ -63,7 +63,8 @@ export const addLike = (cardId) => {
   return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: 'PUT',
     headers: {
-      authorization: config.headers.authorization
+      authorization: config.headers.authorization,
+      'Content-Type': 'application/json'
     }
   }).then(checkResponse);
 };
@@ -73,7 +74,8 @@ export const removeLike = (cardId) => {
   return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: 'DELETE',
     headers: {
-      authorization: config.headers.authorization
+      authorization: config.headers.authorization,
+      'Content-Type': 'application/json'
     }
   }).then(checkResponse);
 };

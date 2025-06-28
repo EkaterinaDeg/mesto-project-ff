@@ -1,5 +1,5 @@
 import './pages/index.css';
-import { initialCards } from './components/cards.js'; // Вернули импорт локальных карточек
+import { initialCards } from './components/cards.js'; // Локальные карточки
 import { openModal, closeModal, setModalEventListeners } from './components/modal.js';
 import { createCard } from './components/card.js';
 import { enableValidation, clearValidation } from './components/validation.js';
@@ -23,11 +23,9 @@ avatarEditButton.classList.add('profile__avatar-edit-button');
 avatarEditButton.type = 'button';
 profileAvatarContainer.style.position = 'relative';
 profileAvatarContainer.append(avatarEditButton);
-document.querySelector('.popup_type_edit');
 avatarEditButton.title = 'Изменить аватар';
 
 const avatarImage = new URL('./images/avatar.jpg', import.meta.url);
-const logoImage = new URL('./images/logo.svg', import.meta.url);
 
 const placesList = document.querySelector('.places__list');
 const profileImage = document.querySelector('.profile__image');
@@ -57,7 +55,7 @@ const validationConfig = {
   submitButtonSelector: '.popup__button',
   inactiveButtonClass: 'popup__button_disabled',
   inputErrorClass: 'popup__input_type_error',
-  errorClass: 'popup__error_visible'
+  errorClass: 'popup__input-error_active'
 };
 
 let currentUserId = null;
@@ -66,6 +64,20 @@ if (profileImage) {
   profileImage.style.backgroundImage = `url(${avatarImage})`;
 } else {
   console.error('Ошибка: Элемент с классом .profile__image не найден в HTML. Не удалось установить фон.');
+}
+
+// Функция для управления состоянием кнопок при загрузке
+function toggleButtonLoading(button, isLoading, loadingText = 'Сохранение...') {
+  if (isLoading) {
+    button.dataset.originalText = button.textContent;
+    button.textContent = loadingText;
+    button.disabled = true;
+    button.classList.add(validationConfig.inactiveButtonClass);
+  } else {
+    button.textContent = button.dataset.originalText || 'Сохранить';
+    button.disabled = false;
+    button.classList.remove(validationConfig.inactiveButtonClass);
+  }
 }
 
 function openImagePopup(cardData) {
@@ -106,10 +118,10 @@ function renderCard(cardData, position = 'append') {
   }
 }
 
-// --- Рендерим локальные карточки сразу ---
+// Рендер локальных карточек
 initialCards.forEach(cardData => renderCard(cardData, 'append'));
 
-// --- Затем загружаем данные пользователя и карточки с сервера ---
+// Загрузка данных пользователя и карточек с сервера
 Promise.all([getUserInfo(), getInitialCards()])
   .then(([userData, cardsData]) => {
     currentUserId = userData._id;
@@ -118,7 +130,6 @@ Promise.all([getUserInfo(), getInitialCards()])
     profileJob.textContent = userData.about;
     profileImage.style.backgroundImage = `url(${userData.avatar})`;
 
-    // Добавляем карточки с сервера после локальных
     cardsData.forEach(cardData => renderCard(cardData, 'append'));
   })
   .catch(err => console.error('Ошибка при загрузке данных с сервера:', err));
@@ -138,7 +149,7 @@ profileEditButton.addEventListener('click', () => {
 profileEditForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
   const submitButton = profileEditForm.querySelector(validationConfig.submitButtonSelector);
-  submitButton.textContent = 'Сохранение...';
+  toggleButtonLoading(submitButton, true);
 
   updateUserInfo(nameInput.value, jobInput.value)
     .then(updatedUser => {
@@ -149,7 +160,7 @@ profileEditForm.addEventListener('submit', (evt) => {
     })
     .catch(err => console.error('Ошибка обновления профиля:', err))
     .finally(() => {
-      submitButton.textContent = 'Сохранить';
+      toggleButtonLoading(submitButton, false);
     });
 });
 
@@ -162,7 +173,7 @@ addPlaceButton.addEventListener('click', () => {
 addCardForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
   const submitButton = addCardForm.querySelector(validationConfig.submitButtonSelector);
-  submitButton.textContent = 'Сохранение...';
+  toggleButtonLoading(submitButton, true);
 
   addNewCard(cardNameInput.value, cardLinkInput.value)
     .then(newCardData => {
@@ -172,7 +183,7 @@ addCardForm.addEventListener('submit', (evt) => {
     })
     .catch(err => console.error('Ошибка добавления карточки:', err))
     .finally(() => {
-      submitButton.textContent = 'Создать';
+      toggleButtonLoading(submitButton, false);
     });
 });
 
@@ -181,7 +192,7 @@ enableValidation(validationConfig);
 profileEditForm.addEventListener('reset', () => clearValidation(profileEditForm, validationConfig));
 addCardForm.addEventListener('reset', () => clearValidation(addCardForm, validationConfig));
 
-// Для аватара
+// Обработка аватара
 avatarEditButton.addEventListener('click', () => {
   avatarEditForm.reset();
   clearValidation(avatarEditForm, validationConfig);
@@ -191,15 +202,15 @@ avatarEditButton.addEventListener('click', () => {
 avatarEditForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
   const submitButton = avatarEditForm.querySelector(validationConfig.submitButtonSelector);
-  submitButton.textContent = 'Сохранение...';
+  toggleButtonLoading(submitButton, true);
 
   updateAvatar(avatarLinkInput.value)
     .then(updatedUser => {
       profileImage.style.backgroundImage = `url(${updatedUser.avatar})`;
       closeModal(avatarEditPopup);
     })
-    .catch(err => console.error(err))
+    .catch(err => console.error('Ошибка обновления аватара:', err))
     .finally(() => {
-      submitButton.textContent = 'Сохранить';
+      toggleButtonLoading(submitButton, false);
     });
 });

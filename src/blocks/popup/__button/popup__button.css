@@ -19,7 +19,7 @@
   cursor: pointer;
 }
 
-.popup__button {
+.popup__button_disabled {
   opacity: 0.5;
   background-color: transparent;
   color: #999;
