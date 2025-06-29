@@ -13,3 +13,5 @@ git clone git@github.com:EkaterinaDeg/mesto-project-ff.git
 
 Для запуска проекта в браузере откройте файл index.html:
 open index.html
+
+Ссылка на страницу сайта: https://ekaterinadeg.github.io/mesto-project-ff/
