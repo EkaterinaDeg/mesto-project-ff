@@ -4,9 +4,11 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack serve --mode development",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config webpack.config.js --stats-error-details",
-    "dev": "webpack serve"
+    "dev": "webpack serve",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -17,7 +19,7 @@
   "bugs": {
     "url": "https://github.com/EkaterinaDeg/mesto-project-ff/issues"
   },
-  "homepage": "https://github.com/EkaterinaDeg/mesto-project-ff#readme",
+  "homepage": "https://EkaterinaDeg.github.io/mesto-project-ff",
   "devDependencies": {
     "@babel/core": "^7.27.4",
     "@babel/preset-env": "^7.27.2",
@@ -27,6 +29,7 @@
     "css-loader": "^7.1.2",
     "css-minimizer-webpack-plugin": "^7.0.2",
     "cssnano": "^7.0.7",
+    "gh-pages": "^6.3.0",
     "html-webpack-plugin": "^5.6.3",
     "mini-css-extract-plugin": "^2.9.2",
     "postcss": "^8.5.4",

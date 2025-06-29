@@ -43,3 +43,27 @@ export function createCard(cardData, currentUserId, { handleDelete, handleLike, 
 
   return cardElement;
 }
+
+// Функция удаления карточки
+export function handleDelete(cardId, cardElement, apiDeleteCard) {
+  if (confirm('Вы действительно хотите удалить эту карточку?')) {
+    apiDeleteCard(cardId)
+      .then(() => {
+        cardElement.remove();
+      })
+      .catch(err => console.error('Ошибка удаления карточки:', err));
+  }
+}
+
+// Функция обработки лайка
+export function handleLike(cardData, currentUserId, cardElement, { addLike, removeLike }) {
+  const isLiked = cardData.likes.some(user => user._id === currentUserId);
+  const likePromise = isLiked ? removeLike(cardData._id) : addLike(cardData._id);
+
+  likePromise
+    .then(updatedCard => {
+      cardData.likes = updatedCard.likes;
+      cardElement.updateLikes(updatedCard.likes.length, updatedCard.likes.some(u => u._id === currentUserId));
+    })
+    .catch(err => console.error('Ошибка при обновлении лайка:', err));
+}

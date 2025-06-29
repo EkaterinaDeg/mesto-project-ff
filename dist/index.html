@@ -6,13 +6,13 @@
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Mesto</title>
-  <!--<script type="module" src="./src/index.js"></script>-->
-<script defer src="/dist/main.js"></script></head>
+ <!-- <script type="module" src="./src/index.js"></script>-->
+<script defer src="/mesto-project-ff/main.js"></script></head>
 
 <body class="page">
 <div class="page__content">
   <header class="header page__section">
-   <img src="/images/logo.0863e5bc26221680f1e2.svg" alt="Логотип проекта масто" class="logo header__logo" />
+   <img src="/mesto-project-ff/images/logo.0863e5bc26221680f1e2.svg" alt="Логотип проекта масто" class="logo header__logo" />
   </header>
   <main class="content">
     <section class="profile page__section">
@@ -85,8 +85,10 @@
     <button type="button" class="card__delete-button"></button>
     <div class="card__description">
       <h2 class="card__title"></h2>
-      <button type="button" class="card__like-button"></button>
-      <span class="card__like-count">0</span> <!-- Добавлен счётчик лайков -->
+      <div class="card__like-container">
+        <button type="button" class="card__like-button"></button>
+        <span class="card__like-count">0</span>
+      </div> <!-- Добавлен счётчик лайков -->
     </div>
   </li>
 </template>

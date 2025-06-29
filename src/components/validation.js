@@ -23,7 +23,7 @@ function checkUrlValidity(input) {
 }
 
 // Проверка валидности одного инпута
-function validateInput(formElement, input) {
+function validateInput(formElement, input, inputErrorClass, errorClass) {
   if (input.name === 'name' || input.name === 'title') {
     checkNameValidity(input);
   } else if (input.name === 'link' || input.name === 'avatar') {
@@ -33,13 +33,13 @@ function validateInput(formElement, input) {
   const errorElement = formElement.querySelector(`#${input.id}-error`);
 
   if (!input.validity.valid) {
-    input.classList.add('popup__input_type_error');
+    input.classList.add(inputErrorClass);
     errorElement.textContent = input.validationMessage;
-    errorElement.classList.add('popup__input-error_active');
+    errorElement.classList.add(errorClass);
   } else {
-    input.classList.remove('popup__input_type_error');
+    input.classList.remove(inputErrorClass);
     errorElement.textContent = '';
-    errorElement.classList.remove('popup__input-error_active');
+    errorElement.classList.remove(errorClass);
   }
 }
 
@@ -49,53 +49,63 @@ function hasInvalidInput(inputList) {
 }
 
 // Управление состоянием кнопки
-function toggleButtonState(inputList, buttonElement) {
+function toggleButtonState(inputList, buttonElement, inactiveButtonClass) {
   if (hasInvalidInput(inputList)) {
-    buttonElement.classList.add('popup__button_disabled');
+    buttonElement.classList.add(inactiveButtonClass);
     buttonElement.disabled = true;
   } else {
-    buttonElement.classList.remove('popup__button_disabled');
+    buttonElement.classList.remove(inactiveButtonClass);
     buttonElement.disabled = false;
   }
 }
 
 // Установка слушателей на форму
-function setEventListeners(formElement) {
-  const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
-  const buttonElement = formElement.querySelector('.popup__button');
+function setEventListeners(
+  formElement,
+  inputSelector,
+  inputErrorClass,
+  errorClass,
+  submitButtonSelector,
+  inactiveButtonClass
+) {
+  const inputList = Array.from(formElement.querySelectorAll(inputSelector));
+  const buttonElement = formElement.querySelector(submitButtonSelector);
 
-  toggleButtonState(inputList, buttonElement);
+  toggleButtonState(inputList, buttonElement, inactiveButtonClass);
 
-  inputList.forEach(input => {
-    input.addEventListener('input', () => {
-      validateInput(formElement, input);
-      toggleButtonState(inputList, buttonElement);
+  inputList.forEach(inputElement => {
+    inputElement.addEventListener('input', () => {
+      validateInput(formElement, inputElement, inputErrorClass, errorClass);
+      toggleButtonState(inputList, buttonElement, inactiveButtonClass);
     });
   });
 }
 
 // Включение валидации на все формы
-export function enableValidation() {
-  const formList = Array.from(document.querySelectorAll('.popup__form'));
+export function enableValidation(validationConfig) {
+  const formList = Array.from(document.querySelectorAll(validationConfig.formSelector));
   formList.forEach(formElement => {
     formElement.addEventListener('submit', evt => evt.preventDefault());
-    setEventListeners(formElement);
+    setEventListeners(
+      formElement,
+      validationConfig.inputSelector,
+      validationConfig.inputErrorClass,
+      validationConfig.errorClass,
+      validationConfig.submitButtonSelector,
+      validationConfig.inactiveButtonClass
+    );
   });
 }
 
 // Очистка ошибок и деактивация кнопки (при открытии попапа)
-export function clearValidation(formElement) {
-  const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
-  const buttonElement = formElement.querySelector('.popup__button');
+export function clearValidation(formElement, validationConfig) {
+  const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
+  const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
 
   inputList.forEach(input => {
-    input.classList.remove('popup__input_type_error');
-    const errorElement = formElement.querySelector(`#${input.id}-error`);
-    errorElement.textContent = '';
-    errorElement.classList.remove('popup__input-error_active');
     input.setCustomValidity('');
+    validateInput(formElement, input, validationConfig.inputErrorClass, validationConfig.errorClass);
   });
 
-  buttonElement.classList.add('popup__button_disabled');
-  buttonElement.disabled = true;
+  toggleButtonState(inputList, buttonElement, validationConfig.inactiveButtonClass);
 }

@@ -1,5 +1,6 @@
 import './pages/index.css';
 import { initialCards } from './components/cards.js'; // Локальные карточки
+import { handleDelete, handleLike } from './components/card.js';
 import { openModal, closeModal, setModalEventListeners } from './components/modal.js';
 import { createCard } from './components/card.js';
 import { enableValidation, clearValidation } from './components/validation.js';
@@ -13,6 +14,7 @@ import {
   removeLike,
   updateAvatar
 } from './components/api.js';
+
 
 const avatarEditPopup = document.querySelector('.popup_type_avatar');
 const avatarEditForm = avatarEditPopup.querySelector('form');
@@ -67,17 +69,18 @@ if (profileImage) {
 }
 
 // Функция для управления состоянием кнопок при загрузке
-function toggleButtonLoading(button, isLoading, loadingText = 'Сохранение...') {
+function toggleButtonText(button, isLoading, loadingText = 'Сохранение...') {
   if (isLoading) {
     button.dataset.originalText = button.textContent;
     button.textContent = loadingText;
-    button.disabled = true;
-    button.classList.add(validationConfig.inactiveButtonClass);
   } else {
     button.textContent = button.dataset.originalText || 'Сохранить';
-    button.disabled = false;
-    button.classList.remove(validationConfig.inactiveButtonClass);
   }
+}
+
+// Отдельная функция для управления состоянием кнопки (блокировка/разблокировка)
+function toggleButtonState(button, isDisabled) {
+  button.disabled = isDisabled;
 }
 
 function openImagePopup(cardData) {
@@ -89,25 +92,8 @@ function openImagePopup(cardData) {
 
 function renderCard(cardData, position = 'append') {
   const card = createCard(cardData, currentUserId, {
-    handleDelete: () => {
-      if (confirm('Вы действительно хотите удалить эту карточку?')) {
-        apiDeleteCard(cardData._id)
-          .then(() => {
-            card.remove();
-          })
-          .catch(err => console.error('Ошибка удаления карточки:', err));
-      }
-    },
-    handleLike: () => {
-      const isLiked = cardData.likes.some(user => user._id === currentUserId);
-      const likePromise = isLiked ? removeLike(cardData._id) : addLike(cardData._id);
-      likePromise
-        .then(updatedCard => {
-          cardData.likes = updatedCard.likes;
-          card.updateLikes(updatedCard.likes.length, updatedCard.likes.some(u => u._id === currentUserId));
-        })
-        .catch(err => console.error('Ошибка при обновлении лайка:', err));
-    },
+    handleDelete: () => handleDelete(cardData._id, card, apiDeleteCard),
+    handleLike: () => handleLike(cardData, currentUserId, card, { addLike, removeLike }),
     handleImageClick: () => openImagePopup(cardData)
   });
 
@@ -149,7 +135,8 @@ profileEditButton.addEventListener('click', () => {
 profileEditForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
   const submitButton = profileEditForm.querySelector(validationConfig.submitButtonSelector);
-  toggleButtonLoading(submitButton, true);
+  toggleButtonText(submitButton, true);
+  toggleButtonState(submitButton, true);
 
   updateUserInfo(nameInput.value, jobInput.value)
     .then(updatedUser => {
@@ -160,7 +147,8 @@ profileEditForm.addEventListener('submit', (evt) => {
     })
     .catch(err => console.error('Ошибка обновления профиля:', err))
     .finally(() => {
-      toggleButtonLoading(submitButton, false);
+      toggleButtonText(submitButton, false);
+      toggleButtonState(submitButton, false);
     });
 });
 
@@ -173,7 +161,8 @@ addPlaceButton.addEventListener('click', () => {
 addCardForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
   const submitButton = addCardForm.querySelector(validationConfig.submitButtonSelector);
-  toggleButtonLoading(submitButton, true);
+  toggleButtonText(submitButton, true);
+  toggleButtonState(submitButton, true);
 
   addNewCard(cardNameInput.value, cardLinkInput.value)
     .then(newCardData => {
@@ -183,7 +172,8 @@ addCardForm.addEventListener('submit', (evt) => {
     })
     .catch(err => console.error('Ошибка добавления карточки:', err))
     .finally(() => {
-      toggleButtonLoading(submitButton, false);
+      toggleButtonText(submitButton, false);
+      toggleButtonState(submitButton, false);
     });
 });
 
@@ -192,7 +182,6 @@ enableValidation(validationConfig);
 profileEditForm.addEventListener('reset', () => clearValidation(profileEditForm, validationConfig));
 addCardForm.addEventListener('reset', () => clearValidation(addCardForm, validationConfig));
 
-// Обработка аватара
 avatarEditButton.addEventListener('click', () => {
   avatarEditForm.reset();
   clearValidation(avatarEditForm, validationConfig);
@@ -202,7 +191,8 @@ avatarEditButton.addEventListener('click', () => {
 avatarEditForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
   const submitButton = avatarEditForm.querySelector(validationConfig.submitButtonSelector);
-  toggleButtonLoading(submitButton, true);
+  toggleButtonText(submitButton, true);
+  toggleButtonState(submitButton, true);
 
   updateAvatar(avatarLinkInput.value)
     .then(updatedUser => {
@@ -211,6 +201,7 @@ avatarEditForm.addEventListener('submit', (evt) => {
     })
     .catch(err => console.error('Ошибка обновления аватара:', err))
     .finally(() => {
-      toggleButtonLoading(submitButton, false);
+      toggleButtonText(submitButton, false);
+      toggleButtonState(submitButton, false);
     });
 });

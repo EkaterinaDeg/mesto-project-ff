@@ -16,7 +16,7 @@ module.exports = (env, argv) => {
     output: {
       filename: isProd ? 'main.[contenthash].js' : 'main.js',
       path: path.resolve(__dirname, 'dist'),
-      publicPath: '/',
+      publicPath: '/mesto-project-ff/',
       clean: true,
     },
 
