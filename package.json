@@ -19,7 +19,7 @@
   "bugs": {
     "url": "https://github.com/EkaterinaDeg/mesto-project-ff/issues"
   },
-  "homepage": "https://EkaterinaDeg.github.io/mesto-project-ff",
+  "homepage": "https://EkaterinaDeg.github.io/mesto",
   "devDependencies": {
     "@babel/core": "^7.27.4",
     "@babel/preset-env": "^7.27.2",
