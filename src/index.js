@@ -3,7 +3,7 @@ import { initialCards } from './components/cards.js'; // Локальные ка
 import { handleDelete, handleLike } from './components/card.js';
 import { openModal, closeModal, setModalEventListeners } from './components/modal.js';
 import { createCard } from './components/card.js';
-import { enableValidation, clearValidation } from './components/validation.js';
+import { toggleButtonState, clearValidation, enableValidation } from './components/validation.js';
 import {
   getUserInfo,
   getInitialCards,
@@ -21,6 +21,7 @@ const avatarEditForm = avatarEditPopup.querySelector('form');
 const avatarLinkInput = avatarEditForm.querySelector('input[name="avatar"]');
 const profileAvatarContainer = document.querySelector('.profile__image');
 const avatarEditButton = document.createElement('button');
+
 avatarEditButton.classList.add('profile__avatar-edit-button');
 avatarEditButton.type = 'button';
 profileAvatarContainer.style.position = 'relative';
@@ -78,11 +79,6 @@ function toggleButtonText(button, isLoading, loadingText = 'Сохранение
   }
 }
 
-// Отдельная функция для управления состоянием кнопки (блокировка/разблокировка)
-function toggleButtonState(button, isDisabled) {
-  button.disabled = isDisabled;
-}
-
 function openImagePopup(cardData) {
   popupImage.src = cardData.link;
   popupImage.alt = cardData.name;
@@ -136,7 +132,11 @@ profileEditForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
   const submitButton = profileEditForm.querySelector(validationConfig.submitButtonSelector);
   toggleButtonText(submitButton, true);
-  toggleButtonState(submitButton, true);
+  toggleButtonState(
+    Array.from(profileEditForm.querySelectorAll(validationConfig.inputSelector)),
+    submitButton,
+    validationConfig.inactiveButtonClass
+  );
 
   updateUserInfo(nameInput.value, jobInput.value)
     .then(updatedUser => {
@@ -148,7 +148,11 @@ profileEditForm.addEventListener('submit', (evt) => {
     .catch(err => console.error('Ошибка обновления профиля:', err))
     .finally(() => {
       toggleButtonText(submitButton, false);
-      toggleButtonState(submitButton, false);
+      toggleButtonState(
+        Array.from(profileEditForm.querySelectorAll(validationConfig.inputSelector)),
+        submitButton,
+        validationConfig.inactiveButtonClass
+      );
     });
 });
 
@@ -162,7 +166,11 @@ addCardForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
   const submitButton = addCardForm.querySelector(validationConfig.submitButtonSelector);
   toggleButtonText(submitButton, true);
-  toggleButtonState(submitButton, true);
+  toggleButtonState(
+    Array.from(addCardForm.querySelectorAll(validationConfig.inputSelector)),
+    submitButton,
+    validationConfig.inactiveButtonClass
+  );
 
   addNewCard(cardNameInput.value, cardLinkInput.value)
     .then(newCardData => {
@@ -173,7 +181,11 @@ addCardForm.addEventListener('submit', (evt) => {
     .catch(err => console.error('Ошибка добавления карточки:', err))
     .finally(() => {
       toggleButtonText(submitButton, false);
-      toggleButtonState(submitButton, false);
+      toggleButtonState(
+        Array.from(addCardForm.querySelectorAll(validationConfig.inputSelector)),
+        submitButton,
+        validationConfig.inactiveButtonClass
+      );
     });
 });
 
@@ -192,7 +204,11 @@ avatarEditForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
   const submitButton = avatarEditForm.querySelector(validationConfig.submitButtonSelector);
   toggleButtonText(submitButton, true);
-  toggleButtonState(submitButton, true);
+  toggleButtonState(
+    Array.from(avatarEditForm.querySelectorAll(validationConfig.inputSelector)),
+    submitButton,
+    validationConfig.inactiveButtonClass
+  );
 
   updateAvatar(avatarLinkInput.value)
     .then(updatedUser => {
@@ -202,6 +218,12 @@ avatarEditForm.addEventListener('submit', (evt) => {
     .catch(err => console.error('Ошибка обновления аватара:', err))
     .finally(() => {
       toggleButtonText(submitButton, false);
-      toggleButtonState(submitButton, false);
+      toggleButtonState(
+        Array.from(avatarEditForm.querySelectorAll(validationConfig.inputSelector)),
+        submitButton,
+        validationConfig.inactiveButtonClass
+      );
     });
 });
+
+export { validationConfig, currentUserId, apiDeleteCard, addLike, removeLike, placesList, renderCard };

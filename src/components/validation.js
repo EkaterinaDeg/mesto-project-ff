@@ -48,15 +48,16 @@ function hasInvalidInput(inputList) {
   return inputList.some(input => !input.validity.valid);
 }
 
-// Управление состоянием кнопки
+// Вспомогательная функция для управления состоянием кнопки
+function _setButtonState(button, isDisabled, inactiveButtonClass) {
+  button.disabled = isDisabled;
+  button.classList.toggle(inactiveButtonClass, isDisabled);
+}
+
+// Управление состоянием кнопки (проверка валидности инпутов + блокировка)
 function toggleButtonState(inputList, buttonElement, inactiveButtonClass) {
-  if (hasInvalidInput(inputList)) {
-    buttonElement.classList.add(inactiveButtonClass);
-    buttonElement.disabled = true;
-  } else {
-    buttonElement.classList.remove(inactiveButtonClass);
-    buttonElement.disabled = false;
-  }
+  const isDisabled = hasInvalidInput(inputList);
+  _setButtonState(buttonElement, isDisabled, inactiveButtonClass);
 }
 
 // Установка слушателей на форму
@@ -109,3 +110,6 @@ export function clearValidation(formElement, validationConfig) {
 
   toggleButtonState(inputList, buttonElement, validationConfig.inactiveButtonClass);
 }
+
+// Экспортируем toggleButtonState, если нужно использовать в index.js
+export { toggleButtonState };
